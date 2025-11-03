@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "draft-cli"
+version = "0.1.0"
+description = "DRaft CLI automates commit and push cycles."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "DRaft Team"}]
+dependencies = [
+    "click>=8.1",
+    "watchdog>=3.0",
+    "pyyaml>=6.0",
+    "keyring>=24.0",
+    "requests>=2.31",
+]
+
+[project.urls]
+Homepage = "https://github.com/example/draft"
+
+[project.scripts]
+draft = "draft.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["draft*"]
