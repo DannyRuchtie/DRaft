@@ -1,4 +1,4 @@
-"""Centralized logging configuration for DRaft."""
+"""Centralized logging configuration for SoloDev."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ LEVELS = {
 
 def setup_logging(level: str = "INFO", verbose: int = 0, quiet: bool = False) -> logging.Logger:
     """
-    Configure logging for DRaft.
+    Configure logging for SoloDev.
     
     Args:
         level: Base log level (DEBUG, INFO, WARNING, ERROR)
@@ -38,7 +38,7 @@ def setup_logging(level: str = "INFO", verbose: int = 0, quiet: bool = False) ->
         effective_level = LEVELS.get(level.upper(), logging.INFO)
     
     # Configure root logger
-    logger = logging.getLogger("draft")
+    logger = logging.getLogger("solodev")
     logger.setLevel(effective_level)
     
     # Remove existing handlers
@@ -70,12 +70,12 @@ def get_logger(name: Optional[str] = None) -> logging.Logger:
     Get a logger instance.
     
     Args:
-        name: Logger name (defaults to 'draft')
+        name: Logger name (defaults to 'solodev')
         
     Returns:
         Logger instance
     """
     if name:
-        return logging.getLogger(f"draft.{name}")
-    return logging.getLogger("draft")
+        return logging.getLogger(f"solodev.{name}")
+    return logging.getLogger("solodev")
 

@@ -1,4 +1,4 @@
-"""Command-line interface for the DRaft automation tool."""
+"""Command-line interface for the SoloDev automation tool."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ import click
 from .adapters.factory import AdapterError, build_adapter
 from .audit import DEFAULT_AUDIT_FILE, find_cycle_entry, latest_entry, restore_from_snapshot
 from .bootstrap import git_setup as bootstrap_git_setup
-from .config import CONFIG_FILENAME, DraftConfig, load_config, save_config
+from .config import CONFIG_FILENAME, SoloDevConfig, load_config, save_config
 from .cycle import CycleManager, CycleReport
 from .ext_api import StatusServer, StatusStore, serve_status
 from .logging import setup_logging
@@ -22,7 +22,7 @@ from .util import format_timedelta
 from .watcher import CycleWatcher
 
 
-def _load_manager() -> tuple[DraftConfig, CycleManager]:
+def _load_manager() -> tuple[SoloDevConfig, CycleManager]:
     config = load_config()
     adapter = None
     try:
@@ -44,7 +44,7 @@ def _format_plan(groups) -> str:
     return "\n".join(lines)
 
 
-def _build_ask_push(config: DraftConfig, manager: CycleManager):
+def _build_ask_push(config: SoloDevConfig, manager: CycleManager):
     if not config.smart_push.ask:
         return lambda report: True
 
@@ -59,7 +59,7 @@ def _build_ask_push(config: DraftConfig, manager: CycleManager):
     return ask
 
 
-def _start_watcher(config: DraftConfig, manager: CycleManager, status_port: int) -> None:
+def _start_watcher(config: SoloDevConfig, manager: CycleManager, status_port: int) -> None:
     status_store = StatusStore()
     status_server: StatusServer = serve_status(store=status_store, port=status_port)
     watcher = CycleWatcher(
@@ -108,7 +108,7 @@ def _read_timeline(entries: Iterable[dict], limit: int) -> None:
 @click.option("-q", "--quiet", is_flag=True, help="Suppress all output except errors")
 @click.pass_context
 def cli(ctx: click.Context, verbose: int, quiet: bool) -> None:
-    """DRaft automates planning, committing, and pushing repository changes."""
+    """SoloDev automates planning, committing, and pushing repository changes."""
     # Store logging options in context for commands to use
     ctx.ensure_object(dict)
     ctx.obj["verbose"] = verbose
@@ -130,7 +130,7 @@ def cli(ctx: click.Context, verbose: int, quiet: bool) -> None:
 @click.option("--model", default="qwen2.5-coder:14b", show_default=True)
 @click.option("--smart-ask/--no-smart-ask", default=True, show_default=True)
 def setup(provider: str, mode: str, model: str, smart_ask: bool) -> None:
-    """Write a baseline .draft.yml configuration."""
+    """Write a baseline .solodev.yml configuration."""
     config_path = Path(CONFIG_FILENAME)
     if config_path.exists() and not click.confirm(f"{CONFIG_FILENAME} exists. Overwrite?", default=False):
         click.echo("Aborted.")
@@ -142,22 +142,22 @@ def setup(provider: str, mode: str, model: str, smart_ask: bool) -> None:
         "model": model,
         "smart_push": {"ask": smart_ask},
     }
-    config = DraftConfig.from_dict(data)
+    config = SoloDevConfig.from_dict(data)
     save_config(config)
     click.echo(f"Saved configuration to {config_path}")
 
 
 @cli.command("git-setup")
 def git_setup_cmd() -> None:
-    """Initialize repository defaults for DRaft."""
+    """Initialize repository defaults for SoloDev."""
     bootstrap_git_setup(Path.cwd())
-    click.echo("Repository bootstrapped for DRaft.")
+    click.echo("Repository bootstrapped for SoloDev.")
 
 
 @cli.command()
 @click.option("--status-port", default=0, type=int, help="Expose status API on this port.")
 def on(status_port: int) -> None:
-    """Start the DRaft watcher."""
+    """Start the SoloDev watcher."""
     config, manager = _load_manager()
     _start_watcher(config, manager, status_port)
 
@@ -170,7 +170,7 @@ def off() -> None:
 
 @cli.command()
 def status() -> None:
-    """Print current DRaft status information."""
+    """Print current SoloDev status information."""
     entry = latest_entry()
     if not entry:
         click.echo("No audit entries yet.")
@@ -187,18 +187,18 @@ def status() -> None:
 @cli.command()
 @click.option("--mode", type=click.Choice(["plan", "commit", "push"]), required=True)
 def switch(mode: str) -> None:
-    """Switch DRaft operating mode."""
+    """Switch SoloDev operating mode."""
     config, _ = _load_manager()
     data = dict(config.raw)
     data["mode"] = mode
-    save_config(DraftConfig.from_dict(data))
+    save_config(SoloDevConfig.from_dict(data))
     click.echo(f"Mode updated to {mode}.")
 
 
 @cli.command()
 @click.option("--format", "output_format", type=click.Choice(["text", "json"]), default="text")
 def config(output_format: str) -> None:
-    """Show current DRaft configuration."""
+    """Show current SoloDev configuration."""
     try:
         cfg = load_config()
     except Exception as exc:
@@ -208,7 +208,7 @@ def config(output_format: str) -> None:
     if output_format == "json":
         click.echo(json.dumps(cfg.raw, indent=2))
     else:
-        click.echo("DRaft Configuration:")
+        click.echo("SoloDev Configuration:")
         click.echo(f"  Mode:              {cfg.mode}")
         click.echo(f"  Branch:            {cfg.branch}")
         click.echo(f"  Idle:              {cfg.idle}")
@@ -231,7 +231,7 @@ def config(output_format: str) -> None:
 
 @cli.command()
 def validate() -> None:
-    """Validate DRaft configuration and environment."""
+    """Validate SoloDev configuration and environment."""
     errors = []
     warnings = []
     
@@ -368,7 +368,7 @@ def push_now(dry_run: bool) -> None:
 @cli.command()
 @click.option("--limit", default=10, show_default=True, help="Number of entries to show.")
 def timeline(limit: int) -> None:
-    """Show the DRaft timeline."""
+    """Show the SoloDev timeline."""
     if not DEFAULT_AUDIT_FILE.exists():
         click.echo("No audit log yet.")
         return

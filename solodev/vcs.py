@@ -26,7 +26,7 @@ class Git:
     """
     Lightweight wrapper around git CLI commands.
     
-    Provides a Pythonic interface to common git operations used by DRaft.
+    Provides a Pythonic interface to common git operations used by SoloDev.
     All commands are executed via subprocess and respect the worktree path.
     """
 

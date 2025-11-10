@@ -1,4 +1,4 @@
-"""Heuristic grouping for DRaft cycles."""
+"""Heuristic grouping for SoloDev cycles."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Cycle orchestration for DRaft."""
+"""Cycle orchestration for SoloDev."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Callable, List, Optional
 
 from .adapters import Adapter
 from .audit import record_cycle, snapshot_files
-from .config import DraftConfig
+from .config import SoloDevConfig
 from .plan import PlanGenerator, PlanResult
 from .policy import PolicyResult, run_checks
 from .util import now_utc
@@ -36,11 +36,11 @@ class CycleReport:
 
 
 class CycleManager:
-    """Manage plan/commit/push cycles for DRaft."""
+    """Manage plan/commit/push cycles for SoloDev."""
 
     def __init__(
         self,
-        config: DraftConfig,
+        config: SoloDevConfig,
         *,
         git: Git | None = None,
         adapter: Adapter | None = None,
@@ -65,7 +65,7 @@ class CycleManager:
         ask_push: Callable[[CycleReport], bool] | None = None,
     ) -> CycleReport:
         """
-        Execute a full DRaft cycle according to the requested mode.
+        Execute a full SoloDev cycle according to the requested mode.
         
         Orchestrates the complete workflow:
         1. Detect changed files
@@ -246,14 +246,14 @@ class CycleManager:
         """
         Create a git tag marking this cycle.
         
-        Tags use the format: draft-YYYYMMDD-HHMMSS
+        Tags use the format: solodev-YYYYMMDD-HHMMSS
         
         Returns:
             Tag name created
         """
         timestamp = now_utc().strftime("%Y%m%d-%H%M%S")
-        name = f"draft-{timestamp}"
-        self.git.tag(name, message="DRaft cycle tag")
+        name = f"solodev-{timestamp}"
+        self.git.tag(name, message="SoloDev cycle tag")
         return name
 
     def _push(self, branch: str) -> bool:

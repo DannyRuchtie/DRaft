@@ -1,4 +1,4 @@
-"""Miscellaneous helper utilities for DRaft."""
+"""Miscellaneous helper utilities for SoloDev."""
 
 from __future__ import annotations
 

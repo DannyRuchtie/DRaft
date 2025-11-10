@@ -1,6 +1,6 @@
-# DRaft CLI
+# SoloDev CLI
 
-**DRaft keeps your repository history tidy by automatically grouping changes, preparing commit messages, and coordinating safe pushes.** It feels like autosave for git: the watcher batches edits, runs policy checks, commits with AI-assisted context, and—when allowed—asks before pushing.
+**SoloDev keeps your repository history tidy by automatically grouping changes, preparing commit messages, and coordinating safe pushes.** It feels like autosave for git: the watcher batches edits, runs policy checks, commits with AI-assisted context, and—when allowed—asks before pushing.
 
 ---
 
@@ -16,26 +16,26 @@ cd your-project
 python3.10 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install DRaft
-pip install -e path/to/draft
+# Install SoloDev
+pip install -e path/to/solodev
 
 # Verify installation
-draft --help
+solodev --help
 ```
 
 ### 5-Minute Setup
 
 ```bash
 # 1. Initialize git repository (if needed) and create .gitignore
-draft git-setup
+solodev git-setup
 
-# 2. Configure DRaft with your preferred AI provider
-draft setup --provider ollama --model qwen2.5-coder:14b --mode push
+# 2. Configure SoloDev with your preferred AI provider
+solodev setup --provider ollama --model qwen2.5-coder:14b --mode push
 
 # 3. Start the watcher
-draft on
+solodev on
 
-# That's it! DRaft is now watching for changes.
+# That's it! SoloDev is now watching for changes.
 ```
 
 ---
@@ -47,19 +47,19 @@ draft on
 The `git-setup` command initializes a git repository (if one doesn't exist) and creates a sensible `.gitignore`:
 
 ```bash
-draft git-setup
+solodev git-setup
 ```
 
 This creates:
 - `.git/` directory (if needed)
-- `.gitignore` with common exclusions (`__pycache__/`, `.venv/`, `draft_audit.jsonl`)
+- `.gitignore` with common exclusions (`__pycache__/`, `.venv/`, `solodev_audit.jsonl`)
 
-### Step 2: Configure DRaft
+### Step 2: Configure SoloDev
 
-Create a `.draft.yml` configuration file:
+Create a `.solodev.yml` configuration file:
 
 ```bash
-draft setup --provider ollama --model qwen2.5-coder:14b --mode push
+solodev setup --provider ollama --model qwen2.5-coder:14b --mode push
 ```
 
 **Configuration Options:**
@@ -75,19 +75,19 @@ draft setup --provider ollama --model qwen2.5-coder:14b --mode push
 
 ```bash
 # Local Ollama (no API key needed)
-draft setup --provider ollama --model qwen2.5-coder:14b --mode push
+solodev setup --provider ollama --model qwen2.5-coder:14b --mode push
 
 # OpenAI GPT-4
 export OPENAI_API_KEY="sk-..."
-draft setup --provider openai --model gpt-4 --mode push
+solodev setup --provider openai --model gpt-4 --mode push
 
 # Anthropic Claude
 export ANTHROPIC_API_KEY="sk-ant-..."
-draft setup --provider anthropic --model claude-3-5-sonnet-20241022 --mode commit
+solodev setup --provider anthropic --model claude-3-5-sonnet-20241022 --mode commit
 
 # Google Gemini
 export GOOGLE_API_KEY="..."
-draft setup --provider google --model gemini-1.5-pro --mode plan
+solodev setup --provider google --model gemini-1.5-pro --mode plan
 ```
 
 ### Step 3: API Keys (Cloud Providers Only)
@@ -107,26 +107,26 @@ export GOOGLE_API_KEY="..."
 
 Add these to your shell profile (`~/.bashrc`, `~/.zshrc`) to persist them across sessions.
 
-**Note:** If an API key is missing, DRaft gracefully falls back to heuristic grouping (no AI assistance).
+**Note:** If an API key is missing, SoloDev gracefully falls back to heuristic grouping (no AI assistance).
 
 ---
 
 ## How It Works
 
-### The DRaft Cycle
+### The SoloDev Cycle
 
-DRaft operates in **cycles**. Each cycle:
+SoloDev operates in **cycles**. Each cycle:
 
 1. **Detects changes** in your working directory
 2. **Groups files** logically (using heuristics + optional AI refinement)
 3. **Runs policy checks** (secret scanning, diff size limits)
 4. **Creates commits** (one per group) with meaningful messages
 5. **Optionally pushes** to a remote branch (with confirmation)
-6. **Records everything** in an audit log (`draft_audit.jsonl`)
+6. **Records everything** in an audit log (`solodev_audit.jsonl`)
 
 ### Operating Modes
 
-DRaft has three modes that control how far each cycle goes:
+SoloDev has three modes that control how far each cycle goes:
 
 | Mode | Behavior | Use Case |
 |------|----------|----------|
@@ -137,7 +137,7 @@ DRaft has three modes that control how far each cycle goes:
 Switch modes anytime:
 
 ```bash
-draft switch --mode commit
+solodev switch --mode commit
 ```
 
 ### The Watcher
@@ -145,7 +145,7 @@ draft switch --mode commit
 The watcher is a background process that monitors your repository for file changes:
 
 ```bash
-draft on --status-port 8765
+solodev on --status-port 8765
 ```
 
 **How it works:**
@@ -158,7 +158,7 @@ draft on --status-port 8765
 
 ### AI-Assisted Grouping
 
-When an AI provider is configured, DRaft:
+When an AI provider is configured, SoloDev:
 1. Starts with **heuristic groups** (by directory, file type, tests vs code)
 2. Sends the file list and heuristic plan to the AI
 3. Receives **refined groups** with better commit messages
@@ -172,31 +172,31 @@ When an AI provider is configured, DRaft:
 
 ### Watcher Commands
 
-#### `draft on`
+#### `solodev on`
 Start the file watcher in the current directory.
 
 ```bash
-draft on                    # Start with auto-assigned port
-draft on --status-port 8765 # Start with specific port for status API
+solodev on                    # Start with auto-assigned port
+solodev on --status-port 8765 # Start with specific port for status API
 ```
 
 The watcher exposes a JSON status endpoint at `http://127.0.0.1:<port>/status` for editor integrations.
 
-#### `draft off`
+#### `solodev off`
 Shows instructions for stopping the watcher (it runs in the foreground, so just press `Ctrl+C`).
 
 ```bash
-draft off
+solodev off
 ```
 
 ### Manual Cycle Triggers
 
-#### `draft plan-now`
+#### `solodev plan-now`
 Run a plan cycle immediately without committing.
 
 ```bash
-draft plan-now              # Show grouped changes
-draft plan-now --dry-run    # Show what would be planned (non-destructive)
+solodev plan-now              # Show grouped changes
+solodev plan-now --dry-run    # Show what would be planned (non-destructive)
 ```
 
 **Output example:**
@@ -212,12 +212,12 @@ draft plan-now --dry-run    # Show what would be planned (non-destructive)
 Policy checks: OK
 ```
 
-#### `draft push-now`
+#### `solodev push-now`
 Run a full cycle: plan, commit, and (optionally) push.
 
 ```bash
-draft push-now              # Run full cycle with push confirmation
-draft push-now --dry-run    # Show what would happen without doing it
+solodev push-now              # Run full cycle with push confirmation
+solodev push-now --dry-run    # Show what would happen without doing it
 ```
 
 If `smart_push.ask` is enabled (default), you'll be prompted:
@@ -229,11 +229,11 @@ Push 2 commit(s) (Backend Changes, Test Updates) to origin/auto/yourusername?
 
 ### Status & History
 
-#### `draft status`
+#### `solodev status`
 Show the most recent cycle's status.
 
 ```bash
-draft status
+solodev status
 ```
 
 **Output:**
@@ -246,12 +246,12 @@ Commits:
   - Test Updates
 ```
 
-#### `draft timeline`
+#### `solodev timeline`
 List recent cycles from the audit log.
 
 ```bash
-draft timeline              # Show last 10 cycles
-draft timeline --limit 25   # Show last 25 cycles
+solodev timeline              # Show last 10 cycles
+solodev timeline --limit 25   # Show last 25 cycles
 ```
 
 **Output:**
@@ -261,78 +261,78 @@ draft timeline --limit 25   # Show last 25 cycles
 2025-11-01T12:05:10  blocked     Policy checks failed.
 ```
 
-#### `draft show <cycle>`
+#### `solodev show <cycle>`
 Display full details for a specific cycle.
 
 ```bash
-draft show draft-20251101-142345       # By tag
-draft show 2025-11-01T14:23:45.123456  # By timestamp
+solodev show solodev-20251101-142345       # By tag
+solodev show 2025-11-01T14:23:45.123456  # By timestamp
 ```
 
 Outputs the complete JSON record including groups, policy results, and commits.
 
-#### `draft commits <cycle>`
+#### `solodev commits <cycle>`
 List commits created during a specific cycle.
 
 ```bash
-draft commits draft-20251101-142345
+solodev commits solodev-20251101-142345
 ```
 
 ### Undo & Restore
 
-#### `draft undo <cycle>`
+#### `solodev undo <cycle>`
 Revert your working directory to the state before a cycle ran.
 
 ```bash
-draft undo draft-20251101-142345       # Undo a cycle
-draft undo draft-20251101-142345 --dry-run  # Preview what would be undone
+solodev undo solodev-20251101-142345       # Undo a cycle
+solodev undo solodev-20251101-142345 --dry-run  # Preview what would be undone
 ```
 
-**How it works:** DRaft stores snapshots of file contents before each cycle. Undo restores those snapshots.
+**How it works:** SoloDev stores snapshots of file contents before each cycle. Undo restores those snapshots.
 
 **Warning:** This overwrites current working directory files. Commit or stash uncommitted changes first.
 
-#### `draft restore <file> --at <cycle>`
+#### `solodev restore <file> --at <cycle>`
 Restore a single file from a previous cycle.
 
 ```bash
-draft restore backend/api/users.py --at draft-20251101-142345
-draft restore backend/api/users.py --at draft-20251101-142345 --dry-run
+solodev restore backend/api/users.py --at solodev-20251101-142345
+solodev restore backend/api/users.py --at solodev-20251101-142345 --dry-run
 ```
 
 Useful for recovering accidentally deleted or modified files.
 
 ### Configuration Management
 
-#### `draft switch --mode <mode>`
+#### `solodev switch --mode <mode>`
 Change the default operating mode.
 
 ```bash
-draft switch --mode plan    # Switch to plan-only mode
-draft switch --mode commit  # Switch to commit-only mode
-draft switch --mode push    # Switch to full push mode
+solodev switch --mode plan    # Switch to plan-only mode
+solodev switch --mode commit  # Switch to commit-only mode
+solodev switch --mode push    # Switch to full push mode
 ```
 
-Updates `.draft.yml` persistently.
+Updates `.solodev.yml` persistently.
 
-#### `draft config`
+#### `solodev config`
 Display the current configuration.
 
 ```bash
-draft config
+solodev config
 ```
 
-Shows the merged configuration (defaults + `.draft.yml` overrides).
+Shows the merged configuration (defaults + `.solodev.yml` overrides).
 
-#### `draft validate`
+#### `solodev validate`
 Validate configuration and check environment.
 
 ```bash
-draft validate
+solodev validate
 ```
 
 Checks:
-- `.draft.yml` syntax and values
+- `.solodev.yml` syntax and values
 - Git repository status
 - API key availability (for cloud providers)
 - AI provider connectivity
@@ -347,15 +347,15 @@ Checks:
 
 ```bash
 # Set mode to plan-only
-draft switch --mode plan
+solodev switch --mode plan
 
 # Start the watcher
-draft on
+solodev on
 
 # Edit files as usual...
 
 # Check the plan via status
-draft status
+solodev status
 
 # When satisfied, commit manually
 git add .
@@ -370,12 +370,12 @@ git commit -m "Your message"
 
 ```bash
 # Set mode to commit-only
-draft switch --mode commit
+solodev switch --mode commit
 
 # Start the watcher
-draft on
+solodev on
 
-# DRaft will commit changes but never push
+# SoloDev will commit changes but never push
 # Push manually when ready:
 git push origin main
 ```
@@ -386,12 +386,12 @@ git push origin main
 
 ```bash
 # Set mode to push with smart-ask enabled (default)
-draft switch --mode push
+solodev switch --mode push
 
 # Start the watcher
-draft on
+solodev on
 
-# DRaft commits and asks before pushing:
+# SoloDev commits and asks before pushing:
 # "Push 2 commit(s) to origin/auto/yourusername? [Y/n]:"
 ```
 
@@ -403,10 +403,10 @@ Pushes go to `origin/auto/$USER` by default (configurable).
 
 ```bash
 # Configure with Ollama (local) or no provider
-draft setup --provider ollama --model qwen2.5-coder:14b --mode commit
+solodev setup --provider ollama --model qwen2.5-coder:14b --mode commit
 
 # Or just don't set API keys for cloud providers
-# DRaft falls back to heuristic grouping automatically
+# SoloDev falls back to heuristic grouping automatically
 ```
 
 ### Workflow 5: Manual Triggers Only
@@ -414,20 +414,20 @@ draft setup --provider ollama --model qwen2.5-coder:14b --mode commit
 **Scenario:** No watcher, manual control.
 
 ```bash
-# Don't run 'draft on'
+# Don't run 'solodev on'
 # Instead, trigger cycles manually when ready:
 
-draft plan-now   # Review groupings
-draft push-now   # Commit and push
+solodev plan-now   # Review groupings
+solodev push-now   # Commit and push
 ```
 
 ---
 
 ## Configuration Reference
 
-DRaft reads configuration from `.draft.yml` in your repository root. All settings are optional—defaults are used when not specified.
+SoloDev reads configuration from `.solodev.yml` in your repository root. All settings are optional—defaults are used when not specified.
 
-### Complete `.draft.yml` Example
+### Complete `.solodev.yml` Example
 
 ```yaml
 # Operating mode: plan, commit, or push
@@ -492,9 +492,9 @@ retention: 7d     # 7 days
 
 These override file-based configuration:
 
-- `DRAFT_MODE` - Operating mode
-- `DRAFT_PROVIDER` - AI provider
-- `DRAFT_MODEL` - Model name
+- `SOLODEV_MODE` - Operating mode
+- `SOLODEV_PROVIDER` - AI provider
+- `SOLODEV_MODEL` - Model name
 - `OPENAI_API_KEY` - OpenAI API key
 - `ANTHROPIC_API_KEY` - Anthropic API key
 - `GOOGLE_API_KEY` - Google API key
@@ -503,18 +503,18 @@ These override file-based configuration:
 
 ## Safety & Policy
 
-DRaft includes built-in safety checks that run before every commit.
+SoloDev includes built-in safety checks that run before every commit.
 
 ### Secret Scanning
 
-DRaft scans diffs for common secret patterns:
+SoloDev scans diffs for common secret patterns:
 
 - API keys (`api_key`, `apikey`, `api-key`)
 - Tokens (`token`, `auth_token`)
 - AWS access keys (`AKIA...`)
 - Generic secrets (`secret`, `password` in assignments)
 
-**Customize patterns** in `.draft.yml`:
+**Customize patterns** in `.solodev.yml`:
 
 ```yaml
 secret_patterns:
@@ -526,7 +526,7 @@ secret_patterns:
 
 ### Diff Size Limits
 
-Large diffs are risky and hard to review. DRaft blocks commits exceeding the configured limit:
+Large diffs are risky and hard to review. SoloDev blocks commits exceeding the configured limit:
 
 ```yaml
 smart_push:
@@ -546,11 +546,11 @@ protected_branches:
   - production
 ```
 
-DRaft will commit locally but skip pushing if the resolved branch is protected.
+SoloDev will commit locally but skip pushing if the resolved branch is protected.
 
 ### Audit Trail
 
-Every cycle is logged to `draft_audit.jsonl`:
+Every cycle is logged to `solodev_audit.jsonl`:
 
 ```json
 {
@@ -561,7 +561,7 @@ Every cycle is logged to `draft_audit.jsonl`:
   "groups": [...],
   "policy": [],
   "commits": ["Backend Changes", "Test Updates"],
-  "tag": "draft-20251101-142345",
+  "tag": "solodev-20251101-142345",
   "pushed": true,
   "branch": "auto/danny"
 }
@@ -583,10 +583,10 @@ The audit log:
 Preview what a command would do without making changes:
 
 ```bash
-draft plan-now --dry-run
-draft push-now --dry-run
-draft undo draft-20251101-142345 --dry-run
-draft restore file.py --at draft-20251101-142345 --dry-run
+solodev plan-now --dry-run
+solodev push-now --dry-run
+solodev undo solodev-20251101-142345 --dry-run
+solodev restore file.py --at solodev-20251101-142345 --dry-run
 ```
 
 Dry-run mode:
@@ -601,12 +601,12 @@ Dry-run mode:
 Control output verbosity:
 
 ```bash
-draft on -v                 # Verbose mode (detailed logs)
-draft on -vv                # Very verbose (debug level)
-draft on --quiet            # Quiet mode (errors only)
+solodev on -v                 # Verbose mode (detailed logs)
+solodev on -vv                # Very verbose (debug level)
+solodev on --quiet            # Quiet mode (errors only)
 ```
 
-Set default level in `.draft.yml`:
+Set default level in `.solodev.yml`:
 
 ```yaml
 log_level: DEBUG  # DEBUG, INFO, WARNING, ERROR
@@ -617,7 +617,7 @@ log_level: DEBUG  # DEBUG, INFO, WARNING, ERROR
 The watcher exposes a JSON HTTP endpoint:
 
 ```bash
-draft on --status-port 8765
+solodev on --status-port 8765
 ```
 
 **Endpoint:** `GET http://127.0.0.1:8765/status`
@@ -628,7 +628,7 @@ draft on --status-port 8765
   "status": "pushed",
   "message": "Changes pushed to remote.",
   "commits": ["Backend Changes", "Test Updates"],
-  "tag": "draft-20251101-142345",
+  "tag": "solodev-20251101-142345",
   "pushed": true,
   "branch": "auto/danny",
   "plan_source": "llm",
@@ -638,7 +638,7 @@ draft on --status-port 8765
 ```
 
 Use this to:
-- Show DRaft status in your editor's status bar
+- Show SoloDev status in your editor's status bar
 - Display recent commit groups in a sidebar
 - Trigger notifications on cycle completion
 
@@ -671,10 +671,10 @@ Appends `[skip ci]` to commit messages (works with most CI systems).
 
 ### Component Overview
 
-DRaft is organized into modular components:
+SoloDev is organized into modular components:
 
 ```
-draft/
+solodev/
 ├── cli.py           # Command-line interface (Click)
 ├── config.py        # Configuration loading and validation
 ├── cycle.py         # Core orchestration (plan → policy → commit → push)
@@ -701,7 +701,7 @@ draft/
 
 Add a new AI provider:
 
-1. **Create an adapter** in `draft/adapters/yourprovider.py`:
+1. **Create an adapter** in `solodev/adapters/yourprovider.py`:
 
 ```python
 from . import Adapter, AdapterError, LLMRequest
@@ -717,12 +717,12 @@ class YourProviderAdapter(Adapter):
         pass
 ```
 
-2. **Register in factory** (`draft/adapters/factory.py`):
+2. **Register in factory** (`solodev/adapters/factory.py`):
 
 ```python
 from .yourprovider import YourProviderAdapter
 
-def build_adapter(config: DraftConfig) -> Adapter:
+def build_adapter(config: SoloDevConfig) -> Adapter:
     # ...
     if provider == "yourprovider":
         api_key = env_first("YOURPROVIDER_API_KEY")
@@ -760,22 +760,22 @@ Each cycle follows this flow:
 
 ### Testing & Development
 
-**Run DRaft in development:**
+**Run SoloDev in development:**
 
 ```bash
 # Install in editable mode
 pip install -e .
 
 # Run with verbose logging
-draft on -vv
+solodev on -vv
 
 # Test without side effects
-draft plan-now --dry-run
+solodev plan-now --dry-run
 ```
 
 **Key files for debugging:**
-- `draft_audit.jsonl` - Full cycle history
-- `.draft.yml` - Current configuration
+- `solodev_audit.jsonl` - Full cycle history
+- `.solodev.yml` - Current configuration
 - Git reflog - Commit and tag history
 
 ---
@@ -784,15 +784,15 @@ draft plan-now --dry-run
 
 ### Common Issues
 
-#### "No module named 'draft'"
+#### "No module named 'solodev'"
 
-**Solution:** Install DRaft in editable mode:
+**Solution:** Install SoloDev in editable mode:
 
 ```bash
-pip install -e /path/to/draft
+pip install -e /path/to/solodev
 ```
 
-Verify with `draft --help`.
+Verify with `solodev --help`.
 
 #### "OPENAI_API_KEY is not set"
 
@@ -805,7 +805,7 @@ export OPENAI_API_KEY="sk-..."
 Or switch to Ollama (local, no key needed):
 
 ```bash
-draft setup --provider ollama --model qwen2.5-coder:14b
+solodev setup --provider ollama --model qwen2.5-coder:14b
 ```
 
 #### Watcher not triggering cycles
@@ -813,12 +813,12 @@ draft setup --provider ollama --model qwen2.5-coder:14b
 **Possible causes:**
 1. **Idle timeout not elapsed** - Wait 30s after last file change (default)
 2. **Batch window active** - Only one cycle per 5 minutes (default)
-3. **No git changes detected** - DRaft only triggers when `git status` shows changes
+3. **No git changes detected** - SoloDev only triggers when `git status` shows changes
 
 **Debug:**
 
 ```bash
-draft on -vv  # Verbose mode shows watcher activity
+solodev on -vv  # Verbose mode shows watcher activity
 ```
 
 #### Policy check blocked my cycle
@@ -841,7 +841,7 @@ Policy checks:
 
 **Solution:**
 - Split changes into smaller commits
-- Temporarily increase limit in `.draft.yml`:
+- Temporarily increase limit in `.solodev.yml`:
 
 ```yaml
 smart_push:
@@ -850,13 +850,13 @@ smart_push:
 
 #### "No changes detected" but I have uncommitted changes
 
-DRaft only sees changes in the git working tree. Check:
+SoloDev only sees changes in the git working tree. Check:
 
 ```bash
 git status
 ```
 
-If files are gitignored, they won't appear in DRaft cycles.
+If files are gitignored, they won't appear in SoloDev cycles.
 
 #### Undo fails with "Snapshot not found"
 
@@ -873,13 +873,13 @@ git reset --hard <commit>
 
 ```bash
 # Check configuration
-draft config
+solodev config
 
 # Validate environment
-draft validate
+solodev validate
 
 # View audit log
-cat draft_audit.jsonl | jq
+cat solodev_audit.jsonl | jq
 
 # Check watcher status
 curl http://127.0.0.1:8765/status | jq
@@ -892,7 +892,7 @@ git log --oneline -10
 ### Getting Help
 
 1. **Check logs:** Run with `-vv` for detailed output
-2. **Review audit log:** `draft timeline` shows recent activity
+2. **Review audit log:** `solodev timeline` shows recent activity
 3. **Test in isolation:** Use `--dry-run` flags to debug without side effects
 4. **Inspect git state:** `git status`, `git log`, `git reflog`
 
@@ -900,6 +900,6 @@ git log --oneline -10
 
 ## Contributing & License
 
-DRaft is an automation tool designed to make git workflows effortless. Contributions, bug reports, and feature requests are welcome!
+SoloDev is an automation tool designed to make git workflows effortless. Contributions, bug reports, and feature requests are welcome!
 
 **License:** MIT
