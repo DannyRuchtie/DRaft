@@ -1,4 +1,4 @@
-"""Filesystem watcher that triggers DRaft cycles."""
+"""Filesystem watcher that triggers SoloDev cycles."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from typing import Callable
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-from .config import DraftConfig
+from .config import SoloDevConfig
 from .cycle import CycleManager, CycleReport
 from .ext_api import StatusStore
 
@@ -30,9 +30,9 @@ def _should_ignore(path: Path) -> bool:
     return any(part.startswith(".git") for part in parts)
 
 
-class DraftEventHandler(FileSystemEventHandler):
+class SoloDevEventHandler(FileSystemEventHandler):
     """
-    File system event handler for the DRaft watcher.
+    File system event handler for the SoloDev watcher.
     
     Filters events and triggers the cycle callback when relevant files change.
     """
@@ -71,13 +71,13 @@ class CycleWatcher:
     Coordinate filesystem events with cycle execution.
     
     The watcher monitors a directory tree for changes and orchestrates
-    DRaft cycles with intelligent debouncing and batch windows.
+    SoloDev cycles with intelligent debouncing and batch windows.
     """
 
     def __init__(
         self,
         root: Path,
-        config: DraftConfig,
+        config: SoloDevConfig,
         manager: CycleManager,
         status_store: StatusStore,
         ask_push: Callable[[CycleReport], bool] | None = None,
@@ -87,7 +87,7 @@ class CycleWatcher:
         
         Args:
             root: Root directory to watch
-            config: DRaft configuration
+            config: SoloDev configuration
             manager: Cycle manager instance
             status_store: Status store for API reporting
             ask_push: Optional callback to confirm pushes
@@ -114,7 +114,7 @@ class CycleWatcher:
         Creates an event handler and begins monitoring the root directory
         recursively for file changes.
         """
-        handler = DraftEventHandler(self._schedule)
+        handler = SoloDevEventHandler(self._schedule)
         self._observer.schedule(handler, str(self.root), recursive=True)
         self._observer.start()
 

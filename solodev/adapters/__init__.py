@@ -1,4 +1,4 @@
-"""Model provider adapters for DRaft."""
+"""Model provider adapters for SoloDev."""
 
 from __future__ import annotations
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..config import DraftConfig
+from ..config import SoloDevConfig
 from ..util import env_first
 from . import Adapter, AdapterError
 from .anthropic import AnthropicAdapter
@@ -11,7 +11,7 @@ from .ollama import OllamaAdapter
 from .openai import OpenAIAdapter
 
 
-def build_adapter(config: DraftConfig) -> Adapter:
+def build_adapter(config: SoloDevConfig) -> Adapter:
     """Instantiate an adapter based on configuration."""
     provider = config.provider.lower()
     if provider == "ollama":

@@ -7,12 +7,12 @@ from pathlib import Path
 
 DEFAULT_GITIGNORE = """__pycache__/
 .venv/
-draft_audit.jsonl
+solodev_audit.jsonl
 """
 
 
 def git_setup(worktree: Path | None = None) -> None:
-    """Initialize git repository defaults for DRaft."""
+    """Initialize git repository defaults for SoloDev."""
     root = Path(worktree or Path.cwd())
 
     if not (root / ".git").exists():

@@ -1,4 +1,4 @@
-"""LLM-assisted planning for DRaft commit cycles."""
+"""LLM-assisted planning for SoloDev commit cycles."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from typing import Iterable, List, Optional
 from .adapters import Adapter, AdapterError, LLMRequest
 from .group import GroupPlan, heuristic_groups
 
-SYSTEM_PROMPT = """You are DRaft, a tool that prepares commit plans.
+SYSTEM_PROMPT = """You are SoloDev, a tool that prepares commit plans.
 Group the provided file paths into logical commits. Respond as JSON:
 {"groups":[{"title":"","body":"","files":[]}]}"""
 
@@ -102,7 +102,7 @@ class PlanGenerator:
 
         groups: List[GroupPlan] = []
         for entry in groups_data:
-            title = str(entry.get("title") or "Draft Change")
+            title = str(entry.get("title") or "SoloDev Change")
             body = str(entry.get("body") or "")
             files = entry.get("files") or []
             if not isinstance(files, list):

@@ -41,7 +41,7 @@ class StatusStore:
 class StatusRequestHandler(BaseHTTPRequestHandler):
     """HTTP handler serving the latest cycle status."""
 
-    server_version = "DRaftStatus/1.0"
+    server_version = "SoloDevStatus/1.0"
 
     def do_GET(self) -> None:
         if self.path not in {"/", "/status"}:
@@ -61,7 +61,7 @@ class StatusRequestHandler(BaseHTTPRequestHandler):
         return  # Silence default logging
 
 
-class DraftStatusHTTPServer(ThreadingHTTPServer):
+class SoloDevStatusHTTPServer(ThreadingHTTPServer):
     """Custom HTTP server carrying the shared status store."""
 
     def __init__(self, server_address, RequestHandlerClass, store: StatusStore):
@@ -74,7 +74,7 @@ class StatusServer:
 
     def __init__(self, port: int, store: StatusStore) -> None:
         self.store = store
-        self._server = DraftStatusHTTPServer(("", port), StatusRequestHandler, store)
+        self._server = SoloDevStatusHTTPServer(("", port), StatusRequestHandler, store)
         self.port = self._server.server_address[1]
         self._thread = threading.Thread(target=self._server.serve_forever, daemon=True)
 

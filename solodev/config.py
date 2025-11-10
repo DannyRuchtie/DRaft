@@ -1,4 +1,4 @@
-"""Configuration handling for DRaft."""
+"""Configuration handling for SoloDev."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import yaml
 
 from .util import deep_merge, parse_duration
 
-CONFIG_FILENAME = ".draft.yml"
+CONFIG_FILENAME = ".solodev.yml"
 
 DEFAULT_CONFIG: dict[str, Any] = {
     "mode": "push",
@@ -48,7 +48,7 @@ class SmartPushConfig:
 
 
 @dataclass(frozen=True)
-class DraftConfig:
+class SoloDevConfig:
     mode: str = DEFAULT_CONFIG["mode"]
     branch: str = DEFAULT_CONFIG["branch"]
     idle: str = DEFAULT_CONFIG["idle"]
@@ -65,7 +65,7 @@ class DraftConfig:
     raw: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "DraftConfig":
+    def from_dict(cls, data: dict[str, Any]) -> "SoloDevConfig":
         """Construct from a dictionary, applying defaults for missing keys."""
         merged = deep_merge(DEFAULT_CONFIG, data)
         smart_push = merged.get("smart_push", {})
@@ -103,11 +103,11 @@ class DraftConfig:
         return parse_duration(self.batch_window)
 
 
-def load_config(path: Path | None = None) -> DraftConfig:
+def load_config(path: Path | None = None) -> SoloDevConfig:
     """Load configuration from a file, applying defaults when missing."""
     config_path = path or Path(CONFIG_FILENAME)
     if not config_path.exists():
-        return DraftConfig()
+        return SoloDevConfig()
 
     try:
         with config_path.open("r", encoding="utf-8") as handle:
@@ -118,10 +118,10 @@ def load_config(path: Path | None = None) -> DraftConfig:
     if not isinstance(payload, dict):
         raise ConfigError("Configuration root must be a mapping.")
 
-    return DraftConfig.from_dict(payload)
+    return SoloDevConfig.from_dict(payload)
 
 
-def save_config(config: DraftConfig, path: Path | None = None) -> None:
+def save_config(config: SoloDevConfig, path: Path | None = None) -> None:
     """Write configuration back to disk."""
     config_path = path or Path(CONFIG_FILENAME)
     with config_path.open("w", encoding="utf-8") as handle:

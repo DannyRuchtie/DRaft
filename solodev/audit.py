@@ -1,4 +1,4 @@
-"""Audit trail utilities for DRaft operations."""
+"""Audit trail utilities for SoloDev operations."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
-DEFAULT_AUDIT_FILE = Path("draft_audit.jsonl")
+DEFAULT_AUDIT_FILE = Path("solodev_audit.jsonl")
 DEFAULT_SNAPSHOT_MAX_SIZE = 10 * 1024 * 1024  # 10 MB
 
 
@@ -179,7 +179,7 @@ def find_cycle_entry(
     Find a cycle entry by tag or timestamp.
     
     Args:
-        cycle_id: Cycle tag (e.g., 'draft-20251101-142345') or timestamp
+        cycle_id: Cycle tag (e.g., 'solodev-20251101-142345') or timestamp
         audit_file: Path to audit file (defaults to DEFAULT_AUDIT_FILE)
         
     Returns:
